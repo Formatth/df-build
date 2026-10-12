@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Build = {
@@ -54,7 +55,7 @@ export default function Home() {
 
   return <main className="shell">
     <header className="topbar">
-      <a className="brand" href="/"><span className="brand-mark">DF</span><span>DF BUILD<span className="brand-dot">.</span></span></a>
+      <Link className="brand" href="/"><span className="brand-mark">DF</span><span>DF BUILD<span className="brand-dot">.</span></span></Link>
       <span className="status"><i /> COMMUNITY TOOL</span>
     </header>
 
