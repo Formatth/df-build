@@ -23,7 +23,7 @@ export default function Home() {
   const loadPage = useCallback(async (nextPage: number) => {
     setLoading(true); setError("");
     try {
-      const response = await fetch(`/api/builds?page=${nextPage}&pageSize=12`);
+      const response = await fetch(`/api/builds?page=${nextPage}&pageSize=24`);
       const json = await response.json() as ApiResponse;
       if (!response.ok) throw new Error(json.error || "Gagal memuat build.");
       setItems((old) => nextPage === 1 ? json.data : [...old, ...json.data]);
@@ -36,11 +36,11 @@ export default function Home() {
   useEffect(() => { void loadPage(1); }, [loadPage]);
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = query.trim().toLowerCase().replace(/[\s-]+/g, "");
     return items.filter((item) => {
       const matchesMode = mode === "ALL" || item.mode.toUpperCase() === mode;
       const matchesQuery = !q || [item.weaponName, item.author, item.name, item.code]
-        .some((value) => value?.toLowerCase().includes(q));
+        .some((value) => value?.toLowerCase().replace(/[\s-]+/g, "").includes(q));
       return matchesMode && matchesQuery;
     });
   }, [items, mode, query]);
@@ -76,7 +76,7 @@ export default function Home() {
           <button key={value} className={`filter ${mode === value ? "active" : ""}`} onClick={() => setMode(value)} aria-pressed={mode === value}>{label}</button>
         )}
       </div>
-      <p className="filter-note">Pencarian dan filter berlaku pada build yang sudah dimuat. Muat halaman berikutnya untuk menambah hasil.</p>
+      <p className="filter-note">Pencarian mencakup build yang sudah dimuat. Gunakan tombol di bawah untuk mengambil halaman berikutnya.</p>
     </section>
 
     {error && <div className="notice error" role="alert">{error}</div>}
@@ -100,7 +100,7 @@ export default function Home() {
     </section>
 
     <div className="load-more-wrap">
-      {page < totalPage ? <button className="load-more" onClick={() => void loadPage(page + 1)} disabled={loading}>{loading ? "Memuat..." : "Muat build lainnya"} <span>↓</span></button> : page > 0 ? <p className="end-note">Kamu sudah mencapai akhir katalog yang tersedia.</p> : null}
+      {page < totalPage ? <button className="load-more" onClick={() => void loadPage(page + 1)} disabled={loading}>{loading ? "Memuat..." : `Muat build lainnya (${page}/${totalPage} halaman)`} <span>↓</span></button> : page > 0 ? <p className="end-note">Kamu sudah mencapai akhir katalog yang tersedia.</p> : null}
     </div>
     <footer className="footer">
       <div className="brand footer-brand"><span className="brand-mark">DF</span><span>DF BUILD<span className="brand-dot">.</span></span></div>
